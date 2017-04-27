@@ -456,7 +456,7 @@
             "grid_x": 32,
             "grid_y": 32,
             "hierarchyFrozen": false,
-            "hierarchyVisible": true,
+            "hierarchyVisible": false,
             "inheritLayerDepth": false,
             "inheritLayerSettings": false,
             "inheritSubLayers": false,
@@ -468,7 +468,7 @@
             "m_serialiseFrozen": false,
             "name": "VisionBlockers",
             "userdefined_depth": false,
-            "visible": true,
+            "visible": false,
             "instances": [
                 {
                     "id": "8fe206f3-03bd-429f-92ae-a71619120031",
