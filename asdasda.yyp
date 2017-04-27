@@ -151,6 +151,14 @@
             }
         },
         {
+            "Key": "6a213a80-b85e-45c5-ac47-402d910e1756",
+            "Value": {
+                "id": "2bc20e74-c4be-4f3e-a9da-ef2e6c9bd12f",
+                "resourcePath": "scripts\\Kawai\\Kawai.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "6c017940-40e9-4ff7-a2e8-ee42fc9f8a8f",
             "Value": {
                 "id": "6461d838-fb0d-4ab4-a6a7-5f5e6e60dcb0",
