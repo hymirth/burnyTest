@@ -77,6 +77,8 @@ else if (keyboard_check(ord("S"))) {
 
 
 
+//this gets the lines for the sides of the camera, currently unused
+
 var cameraTopY=camera_get_view_y(view_camera[0])
 var cameraBotY=camera_get_view_y(view_camera[0])+camera_get_view_height(view_camera[0])
 var cameraLeftX=camera_get_view_x(view_camera[0])
@@ -84,54 +86,71 @@ var cameraRightX=camera_get_view_x(view_camera[0])+camera_get_view_width(view_ca
 var i;
 var counter = 0
 
-hitVertex = ds_list_create()
-rayCastVertex = ds_list_create()
 
+hitVertex = ds_list_create() //creates a list where we will store all the Vertex's that aren't blocked
+rayCastVertex = ds_list_create() //creates a list where we will store 2 of the triangles 3 points (the other point being our own position
+
+
+//this finds all the obj_wallVertex's and puts them into the 2d array vertex
 for (i=0; i < instance_number(wallVertex); i += 1)
 	{
 	vertex[i,0] = instance_find(wallVertex, i).x
 	vertex[i,1] = instance_find(wallVertex, i).y
-
 	}
+
+// this sorts the array by angle from player
 vertex = scr_sort2dArrayByAngle(vertex, x,y)
 
+
+//this checks all the vertexs in the array to see if they are visable from the player, the ones which are are stored in the
+//hitVertex list
 for (i=0; i < array_height_2d(vertex); i+=1)
 	{
-	//point = [vertex[i,0], vertex[i,1]]
+	//this doesnt really have to be like this, im just too lazy to fix
 		if (collision_line(x,y,vertex[i,0],vertex[i,1],obj_visionBlockers,false,true) != noone)
 			{
-
+			
 			}
 		else
 			{
 			ds_list_add(hitVertex,[vertex[i,0],vertex[i,1]])
-
 			}
 	}
+	
+//this loops round all the vertex's in the hitVertex list
 for(i=0; i<ds_list_size(hitVertex); i++)
 	{
-	point = ds_list_find_value(hitVertex,i)
-	if i==ds_list_size(hitVertex)-1
+	point = ds_list_find_value(hitVertex,i) //gets the array in hitVertex at index i, puts it into a new array
+	if i==ds_list_size(hitVertex)-1 
+	//if we at the end of the list, the next angle of the triangle will be at [0] instead of [i+1]
+	//this code is the same as in the else part, this could be made way cleaner
 		{
 		point2 = ds_list_find_value(hitVertex,0)
 		hitpoint1 = scr_raycast(x,y,point[0],point[1],obj_visionBlockers);
 		hitpoint1a = [hitpoint1[@0], hitpoint1[@1]]
 		hitpoint2 = scr_raycast(x,y,point2[0],point2[1],obj_visionBlockers);
-		
-		if hitpoint1 != false
+		//scr_raycast returns false if the line never hits a wall
+		//hitpoint1a = returns the coordinates where a line through point first hits a wall
+		//hitpoint2 = returns the coordinates where a line through point2 first hits a wall
+		if hitpoint1 != false //if the first raycast hits a wall
 			{
 			if point_distance(point[0],point[1],hitpoint1a[0],hitpoint1a[1])>10  && hitpoint2 != false
+				//if where the raycast hits is at least 10(pixels?) from the point AND the second raycast hits a wall
 				{
 				ds_list_add(rayCastVertex,[hitpoint1a[0],hitpoint1a[1], hitpoint2[0], hitpoint2[1]])
+				//add to the triangle list the points where the first raycast hits a wall and where the second
+				//raycast hits a wall
 				}
 			else {ds_list_add(rayCastVertex,[point[0],point[1], point2[0], point2[1]])}
+			// add the normal points to the triangle list
 			}
 		else
 			{
 			ds_list_add(rayCastVertex,[point[0],point[1], point2[0], point2[1]])
+			// add the normal points to the triangle list
 			}
 		}
-	else
+	else //does same as above however point 2 is the next hitvertex [i+1] (this will be used most of the time)
 		{
 		point2 = ds_list_find_value(hitVertex,i+1)
 		hitpoint1 = scr_raycast(x,y,point[0],point[1],obj_visionBlockers);
@@ -151,60 +170,4 @@ for(i=0; i<ds_list_size(hitVertex); i++)
 			}
 		}
 	}
-
-
-
-
-
-
-/*	point = [vertex[i].x, vertex[i].y,arctan(vertex[i].y-y/vertex[i].x-x)]
-	vertexpoint = point
-	col = c_black
-
-
-	tarray[0]=scr_linesIntersect(x,y,point[0],point[1], 0, cameraTopY, 1, cameraTopY, false)
-	tarray[1]=scr_linesIntersect(x,y,point[0],point[1], 0, cameraBotY, 1, cameraBotY, false)
-	tarray[2]=scr_linesIntersect(x,y,point[0],point[1], cameraLeftX, 0, cameraLeftX, 1, false)
-	tarray[3]=scr_linesIntersect(x,y,point[0],point[1], cameraRightX, 0, cameraRightX, 1, false)
-	t=999999999999999999999999999999999999999999999999
-	for (i1=0; i1 < 4; i1+=1)
-		{
-		if tarray[i1]<t && tarray[i1]>0 {t = tarray[i1]}
-		}
-	if t!=999999999999999999999999999999999999999999999999
-		{
-		point = [x+t*(point[0]-x),y+t*(point[1]-y)]
-		}
-		
-	
-	hitpoint = point
-	if (collision_line(x,y,point[0],point[1],obj_visionBlockers,true,true) != noone)
-		{
-		hitpoint = scr_raycast(x,y,point[0],point[1],obj_visionBlockers);
-		if hitpoint==false { hitpoint = [point[0],point[1]] }
-		}
-	if (point_distance(x,y,hitpoint[0],hitpoint[1])>point_distance(x,y,vertexpoint[0],vertexpoint[1]))
-		{ds_list_add(hitpoints, vertexpoint)}
-	ds_list_add(hitpoints, hitpoint)
-	//draw_line_color(x,y,hitpoint[0],hitpoint[1],col, col);
-	}
-	
-for (i=0; i<ds_list_size(hitpoints); i+=1)
-	{
-	hitpointsarraytemp = ds_list_find_value(hitpoints, i)
-	hitpointsarray[i,0]=hitpointsarraytemp[0]
-	hitpointsarray[i,1]=hitpointsarraytemp[1]	
-	}
-	
-ds_list_destroy(hitpoints)
-hitpointsarray = scr_sort2dArrayByAngle(hitpointsarray, x, y)
-for (i=0; i<array_height_2d(hitpointsarray); i+=1)
-	{
-	x2=hitpointsarray[i, 0]
-	y2=hitpointsarray[i, 1]
-	//draw_point_color(x2, y2, c_white)
-	}
-show_debug_message(arctan( tan( pi/2 - 0.1 )))
-show_debug_message(arctan( tan( pi/2 + 0.1 )))
-*/
 
