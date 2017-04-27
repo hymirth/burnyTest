@@ -90,8 +90,9 @@ var counter = 0
 hitVertex = ds_list_create() //creates a list where we will store all the Vertex's that aren't blocked
 rayCastVertex = ds_list_create() //creates a list where we will store 2 of the triangles 3 points (the other point being our own position
 
-
+/*
 //this finds all the obj_wallVertex's and puts them into the 2d array vertex
+
 for (i=0; i < instance_number(wallVertex); i += 1)
 	{
 	vertex[i,0] = instance_find(wallVertex, i).x
@@ -99,7 +100,15 @@ for (i=0; i < instance_number(wallVertex); i += 1)
 	}
 
 // this sorts the array by angle from player
+*/
+for (i=0; i < instance_number(obj_visionBlockers); i += 1)
+	{
+	vertex[i,0] = instance_find(wallVertex, i).x
+	vertex[i,1] = instance_find(wallVertex, i).y
+	}
+
 vertex = scr_sort2dArrayByAngle(vertex, x,y)
+
 
 
 //this checks all the vertexs in the array to see if they are visable from the player, the ones which are are stored in the
